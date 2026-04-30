@@ -6,4 +6,5 @@ Future features:
 Style editor.
 Reactive streak icon. 
 Main app icon?
+Theme revamp.
 
