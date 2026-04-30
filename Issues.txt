@@ -1,6 +1,7 @@
-Issues: 
-Find a better font for the main timer.
-
+Issues:
+Switch session average to daily average.
+Fix performance on clear backgrounds (remove clear backgrounds on everything but the headers).
+Find a better font.
 
 Future features:
 Style editor.
