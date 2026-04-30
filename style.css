@@ -155,7 +155,7 @@ body {
 .timer-status.saved   { color: var(--accent); }
 
 .clock {
-  font-family: var(--mono);
+  font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 76px;
   font-weight: 400;
   letter-spacing: -2px;
