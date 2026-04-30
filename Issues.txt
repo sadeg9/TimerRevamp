@@ -1,0 +1,14 @@
+Issues: 
+Increase heatmap cell size to fill & fix stacked edge month labels.
+"All tag" shows too many classes, should be 5 max.
+If a session is less than 1 minute long, do not add it to the database.
+The line graph is a straight line. 
+The line graph has negatives for some reason.
+Find a better font for the main timer.
+
+
+Future features:
+Style editor.
+Reactive streak icon. 
+Main app icon?
+Revamp graph styling. 
