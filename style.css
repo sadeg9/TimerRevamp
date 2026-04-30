@@ -624,7 +624,7 @@ select:focus { border-color: var(--accent); }
 .tag-context strong { color: var(--text); }
 
 /* Heatmap */
-.heatmap-wrap { overflow-x: auto; margin-bottom: 4px; }
+.heatmap-wrap { margin-bottom: 4px; }
 
 .heatmap-months {
   display: grid;
@@ -640,7 +640,7 @@ select:focus { border-color: var(--accent); }
 
 .heatmap-day-labels {
   display: grid;
-  grid-template-rows: repeat(7, 13px);
+  grid-template-rows: repeat(7, 16px);
   gap: 3px;
   font-size: 10.5px;
   color: var(--text-3);
@@ -651,21 +651,21 @@ select:focus { border-color: var(--accent); }
 
 .heatmap-grid {
   display: grid;
-  grid-template-rows: repeat(7, 13px);
+  grid-template-rows: repeat(7, 16px);
   grid-auto-flow: column;
   gap: 3px;
   flex: 1;
 }
 
 .heatmap-grid .day {
-  width: 13px;
-  height: 13px;
+  width: 16px;
+  height: 16px;
   border-radius: 3px;
   background: var(--cell-empty);
   cursor: pointer;
   transition: transform 0.1s;
 }
-.heatmap-grid .day:hover { transform: scale(1.25); }
+.heatmap-grid .day:hover { transform: scale(1.2); }
 
 .heatmap-legend {
   display: flex;
@@ -680,10 +680,63 @@ select:focus { border-color: var(--accent); }
 .legend-track { display: flex; gap: 3px; }
 
 .legend-sq {
-  width: 13px;
-  height: 13px;
+  width: 16px;
+  height: 16px;
   border-radius: 3px;
 }
+
+/* Tag filter plus button */
+.tag-filter-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border-md);
+  background: var(--bg-card);
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.tag-filter-btn:hover {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Toggle switch */
+.toggle-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+.toggle-switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.toggle-track {
+  width: 34px;
+  height: 20px;
+  border-radius: 99px;
+  background: var(--border-md);
+  transition: background 0.2s;
+  position: relative;
+  flex-shrink: 0;
+}
+.toggle-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch input:checked + .toggle-track { background: var(--accent); }
+.toggle-switch input:checked + .toggle-track::after { transform: translateX(14px); }
 
 /* Tooltip */
 .cal-tooltip {

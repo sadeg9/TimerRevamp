@@ -120,6 +120,11 @@
 
             <div class="stat-cards">
               <div class="stat-card">
+                <div class="stat-label">Total hours all time</div>
+                <div class="stat-value" id="cardTotalAllTime">–</div>
+                <div class="stat-sub" id="cardTotalAllTimeSub"></div>
+              </div>
+              <div class="stat-card">
                 <div class="stat-label">Total this week</div>
                 <div class="stat-value" id="cardTotalWeek">–</div>
                 <div class="stat-sub" id="cardTotalWeekSub"></div>
@@ -128,11 +133,6 @@
                 <div class="stat-label">Current streak</div>
                 <div class="stat-value" id="cardStreak">–</div>
                 <div class="stat-sub" id="cardStreakSub"></div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-label">Top class</div>
-                <div class="stat-value" id="cardTopClass">–</div>
-                <div class="stat-sub" id="cardTopClassSub"></div>
               </div>
               <div class="stat-card">
                 <div class="stat-label">Avg session length</div>
@@ -154,6 +154,32 @@
             <div class="section-row">
               <div class="section-label">CHARTS BY TAG</div>
               <div class="tag-pills" id="tagPills"></div>
+              <button
+                class="tag-filter-btn"
+                id="tagFilterBtn"
+                title="Manage visible tags"
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <line
+                    x1="7"
+                    y1="1"
+                    x2="7"
+                    y2="13"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  />
+                  <line
+                    x1="1"
+                    y1="7"
+                    x2="13"
+                    y2="7"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </button>
             </div>
             <div class="tag-context">
               Showing data for <strong id="tagContextName">–</strong>
@@ -254,6 +280,20 @@
 
     <!-- Heatmap tooltip -->
     <div id="calTooltip" class="cal-tooltip"></div>
+
+    <!-- Tag Filter Modal -->
+    <div id="tagFilterModal" class="modal-overlay hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Visible Tags</h2>
+          <button id="closeTagFilterBtn" class="modal-close">✕</button>
+        </div>
+        <p style="font-size: 13px; color: var(--text-2); margin-top: -4px">
+          Choose which tags appear in the chart selector.
+        </p>
+        <div id="tagFilterList" class="modal-list"></div>
+      </div>
+    </div>
 
     <script src="app.js" defer></script>
   </body>
