@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Study Timer v2</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <!-- ── Header ── -->
+    <header class="header">
+      <div class="header-brand">
+        <span class="brand-dot"></span>
+        <span class="brand-name">Study Timer v2</span>
+      </div>
+      <nav class="header-nav">
+        <button class="nav-btn active" data-view="timer">Timer</button>
+        <button class="nav-btn" data-view="analytics">Analytics</button>
+      </nav>
+      <div class="header-right">
+        <button id="loginBtn" class="login-btn">Sign in</button>
+      </div>
+    </header>
+
+    <!-- ══════════════════════════════════════
+       VIEW: TIMER
+  ══════════════════════════════════════ -->
+    <div id="view-timer" class="view active">
+      <div class="timer-page">
+        <div class="timer-card">
+          <div class="timer-status" id="timerStatus">Ready</div>
+          <div id="clock" class="clock">00:00:00</div>
+
+          <div class="timer-controls">
+            <button id="startBtn" class="ctrl-btn start">Start</button>
+            <button id="stopBtn" class="ctrl-btn stop">Stop</button>
+          </div>
+
+          <div class="class-row">
+            <select id="classSelect">
+              <option value="">Select a class</option>
+            </select>
+            <button
+              id="manageClassesBtn"
+              class="icon-btn"
+              title="Manage classes"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="3" r="1.5" fill="currentColor" />
+                <circle cx="8" cy="8" r="1.5" fill="currentColor" />
+                <circle cx="8" cy="13" r="1.5" fill="currentColor" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent sessions -->
+        <div class="recent-card" id="recentCard">
+          <div class="recent-header">
+            <span class="recent-title">Recent sessions</span>
+            <span class="recent-hint" id="signInHint"
+              >Sign in to see sessions</span
+            >
+          </div>
+          <div id="recentList" class="recent-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+       VIEW: ANALYTICS
+  ══════════════════════════════════════ -->
+    <div id="view-analytics" class="view">
+      <!-- Auth gate -->
+      <div id="authGate" class="auth-gate">
+        <div class="auth-card">
+          <div class="auth-icon">📊</div>
+          <h2>Sign in to view analytics</h2>
+          <p>Connect your Google account to see your study data.</p>
+          <button
+            class="btn-primary"
+            onclick="document.getElementById('loginBtn').click()"
+          >
+            Sign in with Google
+          </button>
+        </div>
+      </div>
+
+      <!-- Dashboard -->
+      <div id="dashboard" class="dashboard hidden">
+        <div class="analytics-header">
+          <div>
+            <h1 class="analytics-title">Study analytics</h1>
+            <span class="analytics-sub" id="semesterLabel">–</span>
+          </div>
+          <div class="range-selector" id="rangeSelector">
+            <button class="range-btn active" data-range="7">Last 7 days</button>
+            <button class="range-btn" data-range="30">Last 30 days</button>
+            <button class="range-btn" data-range="all">All time</button>
+          </div>
+        </div>
+
+        <div class="analytics-body">
+          <!-- ── General Overview ── -->
+          <section class="dash-section">
+            <div class="section-label">GENERAL OVERVIEW</div>
+
+            <div class="stat-cards">
+              <div class="stat-card">
+                <div class="stat-label">Total this week</div>
+                <div class="stat-value" id="cardTotalWeek">–</div>
+                <div class="stat-sub" id="cardTotalWeekSub"></div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Current streak</div>
+                <div class="stat-value" id="cardStreak">–</div>
+                <div class="stat-sub" id="cardStreakSub"></div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Top class</div>
+                <div class="stat-value" id="cardTopClass">–</div>
+                <div class="stat-sub" id="cardTopClassSub"></div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">Avg session length</div>
+                <div class="stat-value" id="cardAvgSession">–</div>
+                <div class="stat-sub" id="cardAvgSessionSub"></div>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-title">Daily study time — last 7 days</div>
+              <div class="chart-wrap h200">
+                <canvas id="dailyBarChart"></canvas>
+              </div>
+            </div>
+          </section>
+
+          <!-- ── Tag Charts ── -->
+          <section class="dash-section">
+            <div class="section-row">
+              <div class="section-label">CHARTS BY TAG</div>
+              <div class="tag-pills" id="tagPills"></div>
+            </div>
+            <div class="tag-context">
+              Showing data for <strong id="tagContextName">–</strong>
+            </div>
+
+            <div class="two-col">
+              <div class="chart-card">
+                <div class="chart-title" id="tagBarTitle">Time by class</div>
+                <div class="chart-wrap h220">
+                  <canvas id="tagBarChart"></canvas>
+                </div>
+              </div>
+              <div class="chart-card">
+                <div class="chart-title">Session length distribution</div>
+                <div class="chart-wrap h220">
+                  <canvas id="distChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-title" id="tagLineTitle">
+                Weekly totals over time
+              </div>
+              <div class="chart-wrap h180">
+                <canvas id="tagLineChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-title">Activity heatmap</div>
+              <div class="heatmap-wrap">
+                <div class="heatmap-months" id="heatmapMonths"></div>
+                <div class="heatmap-body">
+                  <div class="heatmap-day-labels">
+                    <span style="grid-row: 2">Mon</span>
+                    <span style="grid-row: 4">Wed</span>
+                    <span style="grid-row: 6">Fri</span>
+                  </div>
+                  <div class="heatmap-grid" id="heatmapGrid"></div>
+                </div>
+              </div>
+              <div class="heatmap-legend">
+                <span>Less</span>
+                <div class="legend-track">
+                  <div
+                    class="legend-sq"
+                    style="background: var(--cell-empty)"
+                  ></div>
+                  <div
+                    class="legend-sq"
+                    style="background: rgba(124, 111, 224, 0.25)"
+                  ></div>
+                  <div
+                    class="legend-sq"
+                    style="background: rgba(124, 111, 224, 0.5)"
+                  ></div>
+                  <div
+                    class="legend-sq"
+                    style="background: rgba(124, 111, 224, 0.75)"
+                  ></div>
+                  <div
+                    class="legend-sq"
+                    style="background: rgba(124, 111, 224, 1)"
+                  ></div>
+                </div>
+                <span>More</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Manage Classes Modal ── -->
+    <div id="classModal" class="modal-overlay hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Manage Classes</h2>
+          <button id="closeModalBtn" class="modal-close">✕</button>
+        </div>
+        <div class="modal-inputs">
+          <input
+            id="classNameInput"
+            class="modal-input"
+            placeholder="Class name (e.g. Organic Chem 101)"
+          />
+          <input
+            id="classTagInput"
+            class="modal-input"
+            placeholder="Tag / subject (e.g. Chemistry)"
+          />
+          <button id="addClassBtn" class="btn-primary">Add class</button>
+        </div>
+        <div id="classList" class="modal-list"></div>
+      </div>
+    </div>
+
+    <!-- Heatmap tooltip -->
+    <div id="calTooltip" class="cal-tooltip"></div>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
