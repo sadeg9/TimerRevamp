@@ -899,7 +899,7 @@ function applyTint(tint) {
 // Init from saved settings
 (function initSettings() {
   const s = loadSettings();
-  applyTheme(s.theme || "dark");
+  applyTheme(s.theme || "light");
   applyTint(s.tint || "orange");
 })();
 
