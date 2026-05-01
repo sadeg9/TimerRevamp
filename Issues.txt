@@ -1,11 +1,11 @@
 Issues: 
 Theme tints do not fit perfectly.
-Header can be cleaner.
-Code needs cleanup.
+Clock font not right.
+Code clean up.
 
 
 Future features:
 Reactive streak icon. 
 Main app icon?
-
+Alert should pop up when trying to start timer with no class.
 
