@@ -31,6 +31,7 @@
         <button class="nav-btn" data-view="analytics">Analytics</button>
       </nav>
       <div class="header-right">
+        <button id="settingsBtn" class="login-btn">Settings</button>
         <button id="loginBtn" class="login-btn">Sign in</button>
       </div>
     </header>
@@ -40,7 +41,8 @@
   ══════════════════════════════════════ -->
     <div id="view-timer" class="view active">
       <div class="timer-page">
-        <div class="timer-card">
+        <!-- Above-the-fold hero -->
+        <div class="timer-hero">
           <div class="timer-status" id="timerStatus">Ready</div>
           <div id="clock" class="clock">00:00:00</div>
 
@@ -58,16 +60,30 @@
               class="icon-btn"
               title="Manage classes"
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                 <circle cx="8" cy="3" r="1.5" fill="currentColor" />
                 <circle cx="8" cy="8" r="1.5" fill="currentColor" />
                 <circle cx="8" cy="13" r="1.5" fill="currentColor" />
               </svg>
             </button>
           </div>
+
+          <!-- Scroll hint -->
+          <div class="scroll-hint" id="scrollHint">
+            <span>Recent sessions</span>
+            <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+              <path
+                d="M1 1l5 5 5-5"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
         </div>
 
-        <!-- Recent sessions -->
+        <!-- Recent sessions — below the fold, fade in on scroll -->
         <div class="recent-card" id="recentCard">
           <div class="recent-header">
             <span class="recent-title">Recent sessions</span>
@@ -229,22 +245,10 @@
                     class="legend-sq"
                     style="background: var(--cell-empty)"
                   ></div>
-                  <div
-                    class="legend-sq"
-                    style="background: rgba(124, 111, 224, 0.25)"
-                  ></div>
-                  <div
-                    class="legend-sq"
-                    style="background: rgba(124, 111, 224, 0.5)"
-                  ></div>
-                  <div
-                    class="legend-sq"
-                    style="background: rgba(124, 111, 224, 0.75)"
-                  ></div>
-                  <div
-                    class="legend-sq"
-                    style="background: rgba(124, 111, 224, 1)"
-                  ></div>
+                  <div class="legend-sq legend-sq-1"></div>
+                  <div class="legend-sq legend-sq-2"></div>
+                  <div class="legend-sq legend-sq-3"></div>
+                  <div class="legend-sq legend-sq-4"></div>
                 </div>
                 <span>More</span>
               </div>
@@ -280,6 +284,63 @@
 
     <!-- Heatmap tooltip -->
     <div id="calTooltip" class="cal-tooltip"></div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal-overlay hidden">
+      <div class="modal settings-modal">
+        <div class="modal-header">
+          <h2>Settings</h2>
+          <button id="closeSettingsBtn" class="modal-close">✕</button>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-label">Appearance</div>
+          <div class="settings-row">
+            <span class="settings-row-label">Theme</span>
+            <div class="theme-toggle" id="themeToggle">
+              <button class="theme-opt active" data-theme="light">Light</button>
+              <button class="theme-opt" data-theme="dark">Dark</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-label">Accent color</div>
+          <div class="tint-swatches" id="tintSwatches">
+            <button
+              class="tint-swatch active"
+              data-tint="purple"
+              style="background: #7c6fe0"
+              title="Purple"
+            ></button>
+            <button
+              class="tint-swatch"
+              data-tint="blue"
+              style="background: #3b82f6"
+              title="Blue"
+            ></button>
+            <button
+              class="tint-swatch"
+              data-tint="teal"
+              style="background: #14b8a6"
+              title="Teal"
+            ></button>
+            <button
+              class="tint-swatch"
+              data-tint="orange"
+              style="background: #f97316"
+              title="Orange"
+            ></button>
+            <button
+              class="tint-swatch"
+              data-tint="pink"
+              style="background: #ec4899"
+              title="Hot Pink"
+            ></button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Tag Filter Modal -->
     <div id="tagFilterModal" class="modal-overlay hidden">

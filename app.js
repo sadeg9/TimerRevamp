@@ -314,6 +314,34 @@ function renderRecentSessions() {
     `;
     list.appendChild(item);
   });
+
+  initSessionFadeIn();
+}
+
+function initSessionFadeIn() {
+  const items = document.querySelectorAll(".recent-item");
+  const hint  = document.getElementById("scrollHint");
+  if (!items.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, idx) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add("visible"), idx * 70);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  items.forEach(item => observer.observe(item));
+
+  if (hint) {
+    const hero = document.querySelector(".timer-hero");
+    if (hero) {
+      new IntersectionObserver((entries) => {
+        hint.style.opacity = entries[0].isIntersecting ? "" : "0";
+      }, { threshold: 0.3 }).observe(hero);
+    }
+  }
 }
 
 // ══════════════════════════════════════
@@ -381,7 +409,9 @@ document.getElementById("tagFilterBtn").onclick = () => {
         <span class="modal-list-item-name">${tag}</span>
       </span>
       <label class="toggle-switch">
-        <input type="checkbox" ${checked ? "checked" : ""} data-tag="${tag}">
+        <input type="checkbox" ${checked ? "checked" : ""} 
+        
+        ag="${tag}">
         <span class="toggle-track"></span>
       </label>
     `;
@@ -443,9 +473,17 @@ Chart.defaults.plugins.tooltip.padding    = 10;
 Chart.defaults.plugins.tooltip.cornerRadius = 8;
 Chart.defaults.plugins.tooltip.borderWidth  = 0;
 
-const C_FILL   = "rgba(124,111,224,0.72)";
-const C_AREA   = "rgba(124,111,224,0.13)";
-const C_LINE   = "rgba(124,111,224,1)";
+function getAccentRGB() {
+  const el = document.documentElement;
+  const r = getComputedStyle(el).getPropertyValue('--ar').trim() || '124';
+  const g = getComputedStyle(el).getPropertyValue('--ag').trim() || '111';
+  const b = getComputedStyle(el).getPropertyValue('--ab').trim() || '224';
+  return `${r},${g},${b}`;
+}
+function isDark() { return document.documentElement.dataset.theme === "dark"; }
+function C_FILL()  { return `rgba(${getAccentRGB()},${isDark() ? 0.55 : 0.72})`; }
+function C_AREA()  { return `rgba(${getAccentRGB()},${isDark() ? 0.08 : 0.13})`; }
+function C_LINE()  { return `rgba(${getAccentRGB()},${isDark() ? 0.75 : 1})`; }
 const SCALE_X  = { grid: { display: false }, border: { display: false }, ticks: { color: "#9a9a9a" } };
 const SCALE_Y  = { grid: { color: "rgba(0,0,0,0.05)", drawBorder: false }, border: { display: false }, ticks: { color: "#9a9a9a" } };
 
@@ -460,12 +498,13 @@ function renderOverview() {
   const now = new Date();
 
   // — Total this week —
-  const weekCutoff = new Date(now); weekCutoff.setDate(now.getDate() - (now.getDay() + 6) % 7); weekCutoff.setHours(0,0,0,0);  const weekEntries = allEntries.filter(e => e.timestamp.toDate() >= weekCutoff);
+  const weekCutoff = new Date(now); weekCutoff.setDate(now.getDate() - (now.getDay() + 6) % 7); weekCutoff.setHours(0,0,0,0);
+  const weekEntries = allEntries.filter(e => e.timestamp.toDate() >= weekCutoff);
   const weekTotal   = weekEntries.reduce((s, e) => s + e.seconds, 0);
 
   const prevCutoff = new Date(weekCutoff); prevCutoff.setDate(weekCutoff.getDate() - 7);
-const prevWeekEnd = new Date(prevCutoff); prevWeekEnd.setDate(prevCutoff.getDate() + (now.getDay() + 6) % 7); prevWeekEnd.setHours(23,59,59,999);
-const prevWeek   = allEntries.filter(e => { const d = e.timestamp.toDate(); return d >= prevCutoff && d < prevWeekEnd; });
+  const prevWeekEnd = new Date(prevCutoff); prevWeekEnd.setDate(prevCutoff.getDate() + (now.getDay() + 6) % 7); prevWeekEnd.setHours(23,59,59,999);
+  const prevWeek   = allEntries.filter(e => { const d = e.timestamp.toDate(); return d >= prevCutoff && d < prevWeekEnd; });
   const prevTotal  = prevWeek.reduce((s, e) => s + e.seconds, 0);
   const diff       = weekTotal - prevTotal;
 
@@ -546,7 +585,7 @@ function renderDailyBar() {
 
   const data = days.map(d => +((totals[d] || 0) / 3600).toFixed(2));
   const todayKey = localDateKey(today);
-  const bgs = days.map(d => d === todayKey ? "rgba(124,111,224,0.38)" : C_FILL);
+  const bgs = days.map(d => d === todayKey ? `rgba(${getAccentRGB()},0.38)` : C_FILL());
 
   if (charts.daily) {
     charts.daily.data.labels = labels;
@@ -604,7 +643,7 @@ function renderTagBar(tagEntries) {
 
   charts.tagBar = new Chart(document.getElementById("tagBarChart"), {
     type: "bar",
-    data: { labels, datasets: [{ data, backgroundColor: C_FILL, borderRadius: 4, borderSkipped: "left" }] },
+    data: { labels, datasets: [{ data, backgroundColor: C_FILL(), borderRadius: 4, borderSkipped: "left" }] },
     options: {
       indexAxis: "y",
       responsive: true, maintainAspectRatio: false,
@@ -631,7 +670,7 @@ function renderDist(tagEntries) {
     type: "bar",
     data: {
       labels: ["<30m", "30–60m", "1–2h", ">2h"],
-      datasets: [{ data: buckets, backgroundColor: C_FILL, borderRadius: 6, borderSkipped: "bottom" }]
+      datasets: [{ data: buckets, backgroundColor: C_FILL(), borderRadius: 6, borderSkipped: "bottom" }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
@@ -640,7 +679,6 @@ function renderDist(tagEntries) {
         x: SCALE_X,
         y: { ...SCALE_Y, ticks: { color: "#9a9a9a", stepSize: 1 } }
       }
-
     }
   });
 }
@@ -689,12 +727,12 @@ function renderTagLine(tagEntries) {
       labels,
       datasets: [{
         data,
-        borderColor: C_LINE,
-        backgroundColor: C_AREA,
+        borderColor: C_LINE(),
+        backgroundColor: C_AREA(),
         borderWidth: 2,
         tension: 0.4,
         pointRadius: 3,
-        pointBackgroundColor: C_LINE,
+        pointBackgroundColor: C_LINE(),
         fill: true
       }]
     },
@@ -811,8 +849,84 @@ function updateHeatmap(entries) {
     const sec = dayTotals[k] || 0;
     cell._hours = sec / 3600;
     const t = sec / maxSec;
-    cell.style.background = t === 0 ? "var(--cell-empty)" : `rgba(124,111,224,${(0.2 + t * 0.8).toFixed(2)})`;
+    cell.style.background = t === 0 ? "var(--cell-empty)" : `rgba(${getAccentRGB()},${(0.2 + t * 0.8).toFixed(2)})`;
   });
 }
 
 // Heatmap is generated after data loads (needs container width for sizing)
+
+// ══════════════════════════════════════
+//  Settings (theme + tint)
+// ══════════════════════════════════════
+const SETTINGS_KEY = "studyTimerSettings";
+
+function loadSettings() {
+  try {
+    return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {};
+  } catch { return {}; }
+}
+
+function saveSettings(patch) {
+  const s = { ...loadSettings(), ...patch };
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+}
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme === "dark" ? "dark" : "";
+  document.querySelectorAll(".theme-opt").forEach(b => {
+    b.classList.toggle("active", b.dataset.theme === theme);
+  });
+  if (allEntries.length) updateHeatmap(allEntries);
+}
+
+function applyTint(tint) {
+  document.documentElement.dataset.tint = tint;
+  document.querySelectorAll(".tint-swatch").forEach(s => {
+    s.classList.toggle("active", s.dataset.tint === tint);
+  });
+  // Refresh heatmap colors if data is loaded
+  if (allEntries.length) updateHeatmap(allEntries);
+  // Redraw charts with new color
+  if (allEntries.length) {
+    destroyChart("dailyBar");
+    destroyChart("tagBar");
+    destroyChart("dist");
+    destroyChart("tagLine");
+    renderAll();
+  }
+}
+
+// Init from saved settings
+(function initSettings() {
+  const s = loadSettings();
+  applyTheme(s.theme || "dark");
+  applyTint(s.tint || "orange");
+})();
+
+// Settings modal
+document.getElementById("settingsBtn").onclick = () => {
+  document.getElementById("settingsModal").classList.remove("hidden");
+};
+document.getElementById("closeSettingsBtn").onclick = () => {
+  document.getElementById("settingsModal").classList.add("hidden");
+};
+document.getElementById("settingsModal").addEventListener("click", e => {
+  if (e.target === document.getElementById("settingsModal"))
+    document.getElementById("settingsModal").classList.add("hidden");
+});
+
+document.querySelectorAll(".theme-opt").forEach(btn => {
+  btn.onclick = () => {
+    const theme = btn.dataset.theme;
+    applyTheme(theme);
+    saveSettings({ theme });
+  };
+});
+
+document.querySelectorAll(".tint-swatch").forEach(btn => {
+  btn.onclick = () => {
+    const tint = btn.dataset.tint;
+    applyTint(tint);
+    saveSettings({ tint });
+  };
+});
