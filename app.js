@@ -315,34 +315,10 @@ function renderRecentSessions() {
     list.appendChild(item);
   });
 
-  initSessionFadeIn();
+  
 }
 
-function initSessionFadeIn() {
-  const items = document.querySelectorAll(".recent-item");
-  const hint  = document.getElementById("scrollHint");
-  if (!items.length) return;
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, idx) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add("visible"), idx * 70);
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1 });
-
-  items.forEach(item => observer.observe(item));
-
-  if (hint) {
-    const hero = document.querySelector(".timer-hero");
-    if (hero) {
-      new IntersectionObserver((entries) => {
-        hint.style.opacity = entries[0].isIntersecting ? "" : "0";
-      }, { threshold: 0.3 }).observe(hero);
-    }
-  }
-}
 
 // ══════════════════════════════════════
 //  Analytics: Tag Filter State

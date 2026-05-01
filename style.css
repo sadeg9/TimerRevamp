@@ -88,7 +88,7 @@
 body {
   background: var(--bg);
   background-image: var(--bg-grad);
-  background-attachment: fixed;
+   
   color: var(--text);
   font-family: var(--font);
   font-size: 15px;
@@ -295,7 +295,7 @@ select:focus { background: var(--fill-active); }
   align-items: center;
   gap: 5px;
   opacity: 0.4;
-  animation: hintBob 2.4s ease-in-out infinite;
+
   pointer-events: none;
 }
 .scroll-hint span {
@@ -304,10 +304,7 @@ select:focus { background: var(--fill-active); }
   text-transform: uppercase;
   color: var(--text-3);
 }
-@keyframes hintBob {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(5px); }
-}
+
 
 /* Recent sessions */
 .recent-card {
@@ -342,11 +339,9 @@ select:focus { background: var(--fill-active); }
   padding: 12px 0;
   border-bottom: 1px solid rgba(0,0,0,0.05);
   font-size: 13.5px;
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.45s ease, transform 0.45s ease;
+  
 }
-.recent-item.visible { opacity: 1; transform: translateY(0); }
+
 .recent-item:last-child { border-bottom: none; }
 
 .recent-item-left { color: var(--text-2); }
